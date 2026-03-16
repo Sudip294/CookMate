@@ -2,7 +2,7 @@
 
 > **Modern full-stack recipe discovery app** • React + Vite + Tailwind • Express + MongoDB • Spoonacular API • JWT Auth • Dark Mode
 
-[![Home](screenshots/home.png)](https://your-project.vercel.app) *[Deployed Demo]*
+[![Home](screenshots/home.png)](https://cookmate-project.vercel.app) *[Deployed Demo]*
 
 ---
 
