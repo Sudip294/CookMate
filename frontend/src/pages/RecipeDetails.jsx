@@ -18,27 +18,33 @@ const RecipeDetails = () => {
       try {
         const { data } = await api.get(`/recipes/${id}`);
         setRecipe(data);
-        
-        // Add to history
-        await api.post('/user/history', {
-          recipeId: id,
-          title: data.title,
-          image: data.image
-        });
 
-        // Check if favorite
-        const favResponse = await api.get('/user/favorites');
-        const favorites = favResponse.data || [];
-        setIsFavorite(favorites.some(fav => fav.recipeId === id));
+        // Side effects (Non-blocking)
+        if (user) {
+          // Add to history
+          api.post('/user/history', {
+            recipeId: id,
+            title: data.title,
+            image: data.image
+          }).catch(err => console.error('History update failed:', err.response?.data || err.message));
+
+          // Check if favorite
+          api.get('/user/favorites')
+            .then(favResponse => {
+              const favorites = favResponse.data || [];
+              setIsFavorite(favorites.some(fav => fav.recipeId === id));
+            })
+            .catch(err => console.error('Favorite check failed:', err.response?.data || err.message));
+        }
       } catch (error) {
-        console.error(error);
-        toast.error('Failed to load recipe details.');
+        console.error('Recipe Details Fetch Error:', error.response?.data || error.message);
+        toast.error(error.response?.data?.message || 'Failed to load recipe details.');
       } finally {
         setLoading(false);
       }
     };
     fetchRecipeDetails();
-  }, [id]);
+  }, [id, user]);
 
   const toggleFavorite = async () => {
     try {

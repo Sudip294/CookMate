@@ -17,7 +17,8 @@ const RecipeCard = ({ recipe }) => {
         const { data } = await api.get('/user/favorites');
         setIsFavorite(data.some(fav => fav.recipeId === String(recipe.id)));
       } catch (error) {
-        console.error('Error checking favorite:', error);
+        // Silently fail for background check
+        console.warn('Favorite check suppressed');
       }
     };
     checkFavorite();
