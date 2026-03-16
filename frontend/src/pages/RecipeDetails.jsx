@@ -5,9 +5,11 @@ import { Heart, Clock, Users, ArrowLeft, CheckCircle } from 'lucide-react';
 import SkeletonLoader from '../components/SkeletonLoader';
 import api from '../utils/axiosInstance';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 const RecipeDetails = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
