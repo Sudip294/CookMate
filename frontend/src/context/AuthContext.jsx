@@ -13,10 +13,20 @@ export const AuthProvider = ({ children }) => {
   // Check auth state on mount
   useEffect(() => {
     const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token && !document.cookie.includes('token')) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data } = await api.get('/auth/me');
         setUser(data);
       } catch (error) {
+        // If 401, clear local token as it's likely expired
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+        }
         setUser(null);
       } finally {
         setLoading(false);
@@ -29,6 +39,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       setUser(data);
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
       toast.success('Welcome back!');
       return true;
     } catch (error) {
@@ -41,6 +54,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await api.post('/auth/register', { name, email, password });
       setUser(data);
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
       toast.success('Account created successfully!');
       return true;
     } catch (error) {
@@ -53,6 +69,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.post('/auth/logout');
       setUser(null);
+      localStorage.removeItem('token');
       toast.success('Logged out successfully');
     } catch (error) {
       toast.error('Logout failed');
